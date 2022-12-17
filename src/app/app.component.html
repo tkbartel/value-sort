@@ -1,10 +1,10 @@
 <div class="content" role="main">
 <marquee>welcome to value sort app</marquee>
 </div>
-<div *ngIf="this.sorted_lists.length > 1">
+<div *ngIf="!this.finished">
   <span (click)="onSelect('L')">{{left_list[left_index]}}</span> or <span (click)="onSelect('R')">{{right_list[right_index]}}</span>?
 </div>
-<div *ngIf="this.sorted_lists.length == 1">
+<div *ngIf="this.finished">
   {{this.sorted_lists[0]}}
 </div>
 <router-outlet></router-outlet>
