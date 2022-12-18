@@ -8,10 +8,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'value-sort';
-  // all_values = ["a", "b", "c", "d"];
+  all_values: string[] = ["a", "b", "c", "d"];
 
   //TODO: convert all_values to a list of lists
-  sorted_lists = [["a"], ["b"], ["c"], ["d"]];
+  //TODO: import a list of values
+  sorted_lists: string[][];
   current_merge: string[] = [];
 
   //TODO: How do I call shiftLists at component creation?
@@ -21,15 +22,14 @@ export class AppComponent {
   right_index: number =  0;
   finished: boolean = false;
 
-  // constructor() {
-  //   this.shiftLists();
-  // }
+  constructor() {
+    this.sorted_lists = this.all_values.map(x => [x]);
+  }
+
 
   ngOnInit(): void {
     this.shiftLists();
   }
-  
-  // choices: string[] = [];
 
   shiftLists(): void {
     if(this.sorted_lists.length == 1) {
