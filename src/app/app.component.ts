@@ -1,5 +1,6 @@
 import { ValueTransformer } from '@angular/compiler/src/util';
 import { Component } from '@angular/core';
+import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: 'app-root',
@@ -8,11 +9,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'value-sort';
-  all_values: string[] = ["a", "b", "c", "d"];
+  all_values: string[] = [];
 
   //TODO: convert all_values to a list of lists
   //TODO: import a list of values
-  sorted_lists: string[][];
+  sorted_lists: string[][] = [];
   current_merge: string[] = [];
 
   //TODO: How do I call shiftLists at component creation?
@@ -22,13 +23,29 @@ export class AppComponent {
   right_index: number =  0;
   finished: boolean = false;
 
-  constructor() {
-    this.sorted_lists = this.all_values.map(x => [x]);
+  constructor(private http: HttpClient) {
+    this.http.get("assets/values.csv", {responseType: 'text'})
+    .subscribe(
+      data => {
+        console.log(data)
+        this.all_values = data.split("\n").slice();
+        this.shuffleArray(this.all_values);
+        this.sorted_lists = this.all_values.map(x => [x]);
+        this.shiftLists();
+      },
+      error => {
+        console.log(error);
+      }
+    )
   }
 
-
-  ngOnInit(): void {
-    this.shiftLists();
+  shuffleArray(arr: string[]): void {
+    for (let i = arr.length - 1; i >= 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      let tmp = arr[j];
+      arr[j] = arr[i];
+      arr[i] = tmp;
+    }
   }
 
   shiftLists(): void {
