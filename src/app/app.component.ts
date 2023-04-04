@@ -9,14 +9,14 @@ import { HttpClient } from "@angular/common/http";
 })
 export class AppComponent {
   title = 'value-sort';
-  all_values: string[] = [];
 
-  //TODO: convert all_values to a list of lists
-  //TODO: import a list of values
+  // Sub-lists in which all elements are sorted.
   sorted_lists: string[][] = [];
+
+  // The sorted list resulting from merging the left and right lists.
   current_merge: string[] = [];
 
-  //TODO: How do I call shiftLists at component creation?
+  // Left and right lists which are currently being merged.
   left_list: string[] = [];
   right_list: string[] = [];
   left_index: number = 0;
@@ -24,13 +24,14 @@ export class AppComponent {
   finished: boolean = false;
 
   constructor(private http: HttpClient) {
+    // Load the values and create single-element arrays for each.
     this.http.get("assets/values.csv", {responseType: 'text'})
     .subscribe(
       data => {
         console.log(data)
-        this.all_values = data.split("\n").slice();
-        this.shuffleArray(this.all_values);
-        this.sorted_lists = this.all_values.map(x => [x]);
+        let all_values = data.split("\n").slice();
+        this.shuffleArray(all_values);
+        this.sorted_lists = all_values.map(x => [x]);
         this.shiftLists();
       },
       error => {
@@ -39,6 +40,11 @@ export class AppComponent {
     )
   }
 
+  /**
+   * Shuffles the given array in-place.
+   * 
+   * @param arr - array to be shuffled.
+   */
   shuffleArray(arr: string[]): void {
     for (let i = arr.length - 1; i >= 0; i--) {
       let j = Math.floor(Math.random() * (i + 1));
@@ -48,6 +54,9 @@ export class AppComponent {
     }
   }
 
+  /**
+   * Prepare to merge the next two lists of values.
+   */
   shiftLists(): void {
     if(this.sorted_lists.length == 1) {
       this.finished = true;
@@ -62,7 +71,14 @@ export class AppComponent {
     }
   }
 
+  /**
+   * Handles the event of a value being selected by first enacting a step of the merge sort and then choosing the next
+   * pair of elements to compare.
+   * 
+   * @parm side - "L" or "R", for whether the left or right-hand value was chosen.
+   */
   onSelect(side: string): void {
+    // Append the chosen value to the in-progress merge list.
     if (side == "L") {
       this.current_merge.push(this.left_list[this.left_index])
       this.left_index += 1;
@@ -71,6 +87,8 @@ export class AppComponent {
       this.right_index += 1;
     }
     
+    // If either left or right arrays are finished, append the remaining values to the merge list in order and choose
+    // the next two lists to merge.
     if(this.left_index >= this.left_list.length) {
       this.current_merge = this.current_merge.concat(this.right_list.slice(this.right_index, this.right_list.length));
       this.sorted_lists.push(this.current_merge.slice())
